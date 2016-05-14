@@ -1,13 +1,18 @@
 # Search-Engine-System-For-NPU
 Search-Engine-System-For-NPU
-   
-    
-    é¡¹ç›®åç§°ï¼šé¢å‘æ ¡å›­ç½‘çš„æœç´¢å¼•æ“ç³»ç»Ÿ
-    
-    å¼€å‘å¹³å°ï¼šUbuntu 15.04 + Python 2.7
-    
-    ä½¿ç”¨æ¡†æ¶ï¼šScrapy+Whoosh+Fllask
-    
-    Ubuntu 15.04 æµ‹è¯•é€šè¿‡
-    
-    çˆ¬è™«æ€»å…¥å£ï¼šhttp://www.nwpu.edu.cn
+<<<<<<< HEAD
+
+    ÏîÄ¿Ãû³Æ£ºÃæÏòĞ£Ô°ÍøµÄËÑË÷ÒıÇæÏµÍ³
+
+    ¿ª·¢Æ½Ì¨£ºUbuntu 15.04 + Python 2.7
+
+    Ê¹ÓÃ¿ò¼Ü£ºScrapy+Whoosh+Flask
+
+    °æ±¾£º
+    Scrapy 0.25
+    Whoosh 2.7.0
+    Flask  0.10.1
+
+    Ubuntu 15.04 ²âÊÔÍ¨¹ı
+
+    ÅÀ³æ×ÜÈë¿Ú£ºhttp://www.nwpu.edu.cn
