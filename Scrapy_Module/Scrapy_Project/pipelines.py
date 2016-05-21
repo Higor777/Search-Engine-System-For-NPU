@@ -5,15 +5,19 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import os
-from scrapy import log
+import logging  
+import logging.handlers
+
 class Scrapy_ModulePipeline(object):
     filename=0
     lastnamefileName=None
     lastnamefile=None
+    logfile = 'Scrapy_Module.log'
     def __init__(self):
         file_dir = os.path.split(os.path.realpath(__file__))[0]
         self.resultdir = file_dir+'/source/'
         self.lastnamefileName = file_dir+'/filename'
+        self.logger = logging.getLogger('Scrapy_Module') # 获取名为Scrapy_Module的logger  
         if not os.path.exists(self.resultdir):
             os.mkdir(self.resultdir)
         if os.path.isfile(self.lastnamefileName):
@@ -46,13 +50,13 @@ class Scrapy_ModulePipeline(object):
                 self.resultfile.write("\n")
                 self.resultfile.close()
             except Exception,e:
-                log.msg("Write result file failed.", level=log.ERROR)
-                log.msg(e, level=log.ERROR)
+                self.logger.error("Write result file failed.", level=log.ERROR)
+                self.logger.error(e)
             try:
                 self.lastnamefile = open(self.lastnamefileName,'w')
                 self.lastnamefile.write(str(self.filename))
                 self.lastnamefile.close()
             except Exception,e:
-                log.msg("Write lastnamefileName file failed.", level=log.ERROR)
-                log.msg(e, level=log.ERROR)
+                self.logger.error("Write lastnamefileName file failed.")
+                self.logger.error(e)
         return item
