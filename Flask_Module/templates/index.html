@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block index %}
 {% if keyword %}
-    <form action="{{ url_for('index') }}"  method="post" style="margin-left:30%;" >
-        <input name="keyword" maxlength="100" type="text" value = "{{ keyword }}" autocomplete="off" class="inputbox">
+    <form action="{{ url_for('index') }}"  method="get" style="margin-left:30%;" >
+        <input name="kw" maxlength="100" type="text" value = "{{ keyword }}" autocomplete="off" class="inputbox">
         <input value="搜索" type="submit"  class="submitbox" >
     </form>
 {% else %}
-    <form action="{{ url_for('index') }}"  method="post" style="margin-left:30%;"  >
-        <input name="keyword" maxlength="100" type="text" value=" " autocomplete="off" class="inputbox">
+    <form action="{{ url_for('index') }}"  method="get" style="margin-left:30%;"  >
+        <input name="kw" maxlength="100" type="text" value="" autocomplete="off" class="inputbox">
         <input value="搜索" type="submit"  class="submitbox" >
     </form>
 {% endif %}

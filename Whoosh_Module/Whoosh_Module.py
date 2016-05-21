@@ -13,6 +13,7 @@ from whoosh.qparser import QueryParser
 from whoosh.fields import *
 from whoosh.analysis import RegexAnalyzer
 from whoosh.analysis import Tokenizer,Token
+from whoosh import highlight
 from jieba.analyse import ChineseAnalyzer 
 import logging  
 import logging.handlers
@@ -77,10 +78,13 @@ class Whoosh_Module(object):
                     url = file.readline().decode('utf-8')
                     tit = file.readline().decode('utf-8')
                     con = file.read().decode('utf-8')
-                    writer = self.index.writer()
-                    writer.add_document(title=tit,path=url,content=con)
-                    writer.commit()
-                    #print sourcefile
+                    if url and tit and con:
+                        writer = self.index.writer()
+                        writer.add_document(title=tit,path=url,content=con)
+                        writer.commit()
+                        #print sourcefile
+                    else:
+                        continue
             except :
                  self.logger.info("Read file Error:"+sourcefile)
             try:
@@ -91,10 +95,12 @@ class Whoosh_Module(object):
         while True:
             self.update_index()
 
-    def search(self,keyword,limit=50):
+    def search(self,keyword,limit=None):
         with self.index.searcher(closereader=False) as searcher:
             query = QueryParser("content",self.index.schema).parse(keyword)
             results = searcher.search(query,limit=limit)
+            results.highlighter.formatter = highlight.HtmlFormatter(tagname="span", classname="match",termclass='')
+            results.order = highlight.SCORE
         return results
 
 

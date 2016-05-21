@@ -1,21 +1,41 @@
 {% extends "index.html" %}
 {% block result %}
 {% if results %}
-<h3>以下为相关搜索结果：</h3>
-{%for result in results%}
-<table>
-<tr>
-<td><strong><a href={{ result['path'] }} target="_blank">{{ result['title'] }}</a></strong></td>
-</tr>
-<tr>
-<td>{{ result['content'][0:200] }}...</td>
-
-
-</tr>
-</table>
-{% endfor%}
+    <p>搜索到{{results.scored_length()}}个结果，用时{{results.runtime}}s</p>
+    <h3>以下为相关搜索结果：</h3>
+    {%for result in results[(page-1)*10:page*10]%}
+        <table>
+        <tr>
+        <td><strong><a href="{{ result['path'] }}" target="_blank">{{ result['title'] }}</a></strong></td>
+        </tr>
+        <tr>
+        <td>{{ result.highlights('content')|safe }}...</td>
+        </tr>
+        </table>
+    {% endfor%}
+    <div id="page">
+    <a class ="pg"  href="/?kw={{keyword}}&pg={{page-1}}">上一页</a>
+    {%if(page<=5)%}
+        {% for pg in range(1,11) %}
+            {% if pg == page %}
+                <a class ="curpg" href="/?kw={{keyword}}&pg={{pg}}"><span>{{pg}}</span></a>
+            {% else %}
+                <a class ="pg" href="/?kw={{keyword}}&pg={{pg}}"><span>{{pg}}</span></a>
+            {% endif %}
+        {% endfor%}
+    {% else %}
+        {% for pg in range(page-5,page+5) %}
+            {% if pg == page %}
+                <a class ="curpg" href="/?kw={{keyword}}&pg={{pg}}"><span>{{pg}}</span></a>
+            {% else %}
+                <a class ="pg" href="/?kw={{keyword}}&pg={{pg}}"><span>{{pg}}</span></a>
+            {% endif %}
+        {% endfor%}
+    {% endif %}
+    <a class ="pg" href="/?kw={{keyword}}&pg={{page+1}}">下一页</a>
+    </div>
 {% else %}
-<h3>很抱歉，未能找到你搜索的内容!</h3>
+    <h3>很抱歉，未能找到你搜索的内容!</h3>
 {% endif %}
 {% endblock %}
 

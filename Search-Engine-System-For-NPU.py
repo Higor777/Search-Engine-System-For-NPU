@@ -11,16 +11,16 @@ __version__ = "v1.0"
 
 class Search_Engine_System_For_NPU(object):
     def __init__(self):
-        Scrapy = Scrapy_Module()
-        Whoosh = Whoosh_Module()
-        self.Flask = Flask_Module(Whoosh)
-        self.Scrapytask = threading.Thread(target=Scrapy.run)
-        self.Whooshtask = threading.Thread(target=Whoosh.run)
+        self.Scrapy = Scrapy_Module()
+        self.Whoosh = Whoosh_Module()
+        self.Flask = Flask_Module(self.Whoosh)
+        self.Flasktask = threading.Thread(target=self.Flask.run)
+        self.Whooshtask = threading.Thread(target=self.Whoosh.run)
     def run(self):
-        self.Scrapytask.start()
+        self.Flasktask.start()
         self.Whooshtask.start()
-        self.Flask.run()
-        self.Scrapytask.join()
+        self.Scrapy.run()
+        self.Flasktask.join()
         self.Whooshtask.join()
 
 if __name__ == '__main__':

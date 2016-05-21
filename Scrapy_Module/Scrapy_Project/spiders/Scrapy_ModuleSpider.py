@@ -17,7 +17,7 @@ import os
 class Scrapy_ModuleSpider(scrapy.Spider):
     name = "Scrapy_ModuleSpider"
     allowed_domains = ["nwpu.edu.cn"]
-    start_urls = ['http://www.nwpu.edu.cn']
+    start_urls = ['http://www.nwpu.edu.cn/']
     CrawledURL=[]
     SecondCrawledURL=[]
     RecordedURL=[]

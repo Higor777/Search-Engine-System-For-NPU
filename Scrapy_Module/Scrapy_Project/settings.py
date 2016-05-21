@@ -27,7 +27,7 @@ ITEM_PIPELINES = {
 #LOG_STDOUT = True
 
 #下载同一网站下页面需要等待的时间，适当设置可以减小服务器压力
-DOWNLOAD_DELAY = 0.5
+#DOWNLOAD_DELAY = 0.5
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'Scrapy_Module (+http://www.yourdomain.com)'
