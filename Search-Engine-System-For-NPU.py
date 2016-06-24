@@ -7,7 +7,7 @@ from Flask_Module.Flask_Module import Flask_Module
 
 __author__ = "Higor"
 __team__ = "Team of IS"
-__version__ = "v1.0"
+__version__ = "v1.1"
 
 class Search_Engine_System_For_NPU(object):
     def __init__(self):

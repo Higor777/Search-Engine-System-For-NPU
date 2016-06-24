@@ -13,11 +13,14 @@ from scrapy.utils.response import get_base_url
 from scrapy.utils.url import urljoin_rfc
 import os
 
+from statistics.statistics import statistics
+
 
 class Scrapy_ModuleSpider(scrapy.Spider):
     name = "Scrapy_ModuleSpider"
     allowed_domains = ["nwpu.edu.cn"]
     start_urls = ['http://www.nwpu.edu.cn/']
+    handle_httpstatus_list = [301,302,400,403,404,500,503,504]
     CrawledURL=[]
     SecondCrawledURL=[]
     RecordedURL=[]
@@ -26,6 +29,7 @@ class Scrapy_ModuleSpider(scrapy.Spider):
     is_FileName=None
     is_File=None
     URLPool=[]
+    statistics=statistics()
     def __init__(self):
         file_dir = os.path.split(os.path.realpath(__file__))[0]
         self.CrawledFileName = file_dir+'/CrawledURL'
@@ -40,21 +44,21 @@ class Scrapy_ModuleSpider(scrapy.Spider):
             Crawled_line = self.CrawledFile.readline().strip().lstrip().rstrip('\n')
         self.CrawledFile.close()
 
-    
-
     def parse(self, response):
         html_doc = response.body 
         html_doc = html_doc.decode('utf-8')
         soup = BeautifulSoup(html_doc)
-        #去除网页中的script内容
-        [script.extract() for script in soup.findAll('script')]
-        [style.extract() for style in soup.findAll('style')]
+        if response.status in self.handle_httpstatus_list:
+            self.statistics.record(response)
+            return#错误返回只用于统计，不进行处理
+        [script.extract() for script in soup.findAll('script')]#去除网页中的script内容
+        [style.extract() for style in soup.findAll('style')]#去除网页中的css内容
         itemTemp = {}
-        itemTemp['title'] = soup.find('title')
-        itemTemp['content'] = soup.get_text()
-        itemTemp['link'] = soup.findAll("a")
+        itemTemp['title'] = soup.find('title')#查找网页title
+        itemTemp['content'] = soup.get_text()#获取网页文本
+        itemTemp['link'] = soup.findAll('a')#获取网页内所有链接
         item = Scrapy_ModuleItem()
-        item['cururl'] = response.url
+        item['cururl'] = response.url#获取当前网页链接地址
         base_url = get_base_url(response)
         for att in itemTemp:
             item[att] = []
@@ -110,7 +114,7 @@ class Scrapy_ModuleSpider(scrapy.Spider):
                 tergetindex = index       #位置数总加起来
         return tergetindex
 
-    #链接滤除，去掉一下不是文本信息和有效地址的链接
+    #链接滤除，去除一些不是文本的信息和有效地址的链接
     def url_filter(self,url):
         if 'javascript' in url:
             return False
@@ -136,11 +140,16 @@ class Scrapy_ModuleSpider(scrapy.Spider):
     def is_file(self,url):
         if '.rar' in url:
             return True
+        if '.zip' in url:
+            return True
         if '.doc' in url:
             return True
         if '.xls' in url:
             return True
         if '.pdf' in url:
             return True
+        if '.ppt' in url:
+            return True
         return False
+
 

@@ -54,4 +54,4 @@ class Scrapy_Module(object):
 
 
 if __name__ == '__main__' :
-    Scrapy_Module().run()
+    Scrapy_Module().crawl()

@@ -13,6 +13,7 @@ from whoosh.qparser import QueryParser
 from whoosh.fields import *
 from whoosh.analysis import RegexAnalyzer
 from whoosh.analysis import Tokenizer,Token
+from whoosh import scoring
 from whoosh import highlight
 from jieba.analyse import ChineseAnalyzer 
 import logging  
@@ -30,7 +31,6 @@ class Whoosh_Module(object):
     indexeddir = None
     def __init__(self):
         file_dir = os.path.split(os.path.realpath(__file__))[0]
-        os.chdir(file_dir)
         self.logfile = file_dir+'/Whoosh_Module.log'
         self.indexdir = file_dir+'/index/'
         self.sourcedir = get_sourcedir()+'/source/'
@@ -52,55 +52,48 @@ class Whoosh_Module(object):
         if not os.path.exists(self.indexdir):
             os.mkdir(self.indexdir)
             self.index = create_in(self.indexdir,self.schema)
-            for sourcefile in os.listdir(self.sourcedir):
-                try :
-                    with open(self.sourcedir+sourcefile,'r') as file:
-                        url = file.readline().decode('utf-8')
-                        tit = file.readline().decode('utf-8')
-                        con = file.read().decode('utf-8')
-                        writer = self.index.writer()
-                        writer.add_document(title=tit,path=url,content=con)
-                        writer.commit()
-                        #print sourcefile
-                except :
-                     self.logger.info("Read file Error:"+sourcefile)
-                try:
-                    shutil.move(self.sourcedir+sourcefile,self.indexeddir+sourcefile)    
-                except:
-                    self.logger.info("Move file Error:"+sourcefile)
         else :
             self.index = open_dir(self.indexdir)
 
     def update_index(self):
-        for sourcefile in os.listdir(self.sourcedir):
+        file_list = os.listdir(self.sourcedir)
+        for sourcefile in file_list:
             try :
                 with open(self.sourcedir+sourcefile,'r') as file:
                     url = file.readline().decode('utf-8')
                     tit = file.readline().decode('utf-8')
                     con = file.read().decode('utf-8')
                     if url and tit and con:
+                        print url
                         writer = self.index.writer()
                         writer.add_document(title=tit,path=url,content=con)
                         writer.commit()
-                        #print sourcefile
+                        try:
+                            shutil.move(self.sourcedir+sourcefile,self.indexeddir+sourcefile)    
+                        except:
+                            self.logger.info("Move file Error:"+sourcefile)
                     else:
                         continue
             except :
                  self.logger.info("Read file Error:"+sourcefile)
-            try:
-                shutil.move(self.sourcedir+sourcefile,self.indexeddir+sourcefile)    
-            except:
-                    self.logger.info("Move file Error:"+sourcefile)
     def run(self):
         while True:
             self.update_index()
 
     def search(self,keyword,limit=None):
-        with self.index.searcher(closereader=False) as searcher:
+        with self.index.searcher(weighting=scoring.Frequency(),closereader=False) as searcher:
             query = QueryParser("content",self.index.schema).parse(keyword)
             results = searcher.search(query,limit=limit)
             results.highlighter.formatter = highlight.HtmlFormatter(tagname="span", classname="match",termclass='')
             results.order = highlight.SCORE
+        return results
+
+    def search_page(self,keyword,page=1,pagelen=10):
+        with self.index.searcher(closereader=False) as searcher:
+            query = QueryParser("content",self.index.schema).parse(keyword)
+            results = searcher.search_page(query,page,pagelen=pagelen)
+            print dir(results[0])
+            print dir(results)
         return results
 
 

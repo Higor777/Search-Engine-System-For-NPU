@@ -7,14 +7,15 @@ sys.setdefaultencoding('utf-8')
 sys.path.append(os.path.split(os.path.realpath(__file__))[0])
 sys.path.append("../")
 from Whoosh_Module.Whoosh_Module import Whoosh_Module
+from Scrapy_Module.Scrapy_Project.spiders.statistics.statistics import statistics
 from flask import Flask,url_for,render_template,request
-results = None
+
 Whoosh = None
+Statis = None
 flask_app = Flask(__name__)
 @flask_app.route('/',methods=['GET', 'POST'])
 def index():
     global Whoosh
-    global results
     if request.method == 'GET':
         #keyword=request.form['keyword']
         keyword=request.args.get('kw')
@@ -27,23 +28,19 @@ def index():
             page=1
         if keyword:
             results = Whoosh.search(keyword)
-            #results.formatter = highlight.Formatter()
-            if page:
-                return render_template('result.html',results=results,keyword=keyword,page=page)
-            else:
-                return render_template('result.html',results=results,keyword=keyword,page=1)
+            pagenum = int(results.scored_length()/10)+1
+            #results = Whoosh.search_page(keyword,page=page,pagelen=10)
+            return render_template('result.html',results=results,keyword=keyword,page=page,pagenum=pagenum)
         else :
             return render_template('index.html',results=None)
     else :
         return render_template('index.html',results=None)
 
-@flask_app.route('/result/<int:page>', methods = ['GET', 'POST'])
-def result(page):
-    global results
-    if request.method == 'GET':
-        return render_template('result.html',results=results,keyword='123')
-    else :
-        return render_template('index.html',results=None)
+@flask_app.route('/statistics/',methods=['GET', 'POST'])
+def statis():
+    global Statis
+    Statis = statistics()
+    return render_template('statistics.html',statistics=Statis)
 
 
 class Flask_Module(object):
